@@ -24,6 +24,7 @@ type queueMongoDB struct {
 	tasks    map[string]monsterqueue.Task
 	tasksMut sync.RWMutex
 	done     chan bool
+	taskDone chan bool
 	wg       sync.WaitGroup
 }
 
@@ -32,6 +33,7 @@ type QueueConfig struct {
 	Database         string // MongoDB database name
 	CollectionPrefix string // Prefix for all collections created in MongoDB
 	PollingInterval  time.Duration
+	WaitTask         bool // Wait the current task finishes to get another task
 }
 
 // Creates a new queue. The QueueConfig parameter will tell us how to connect
@@ -41,9 +43,10 @@ type QueueConfig struct {
 // called in this *same* instance.
 func NewQueue(conf QueueConfig) (monsterqueue.Queue, error) {
 	q := &queueMongoDB{
-		config: &conf,
-		tasks:  make(map[string]monsterqueue.Task),
-		done:   make(chan bool),
+		config:   &conf,
+		tasks:    make(map[string]monsterqueue.Task),
+		done:     make(chan bool),
+		taskDone: make(chan bool),
 	}
 	var err error
 	if conf.Url == "" {
@@ -168,6 +171,15 @@ func (q *queueMongoDB) ProcessLoop() {
 			log.Debugf("error getting message from queue: %s", err.Error())
 		}
 		if hasMessage {
+			if q.config.WaitTask {
+				select {
+				case <-q.taskDone:
+					continue
+				case <-q.done:
+					return
+				}
+			}
+
 			select {
 			case <-q.done:
 				return
@@ -315,6 +327,7 @@ func (q *queueMongoDB) waitForMessage() (bool, error) {
 		if !job.ResultMessage.Done {
 			q.moveToResult(&job, nil, monsterqueue.ErrNoJobResultSet)
 		}
+		q.taskDone <- true
 	}()
 	return true, nil
 }
