@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tsuru/monsterqueue"
-	"github.com/tsuru/monsterqueue/log"
+	"github.com/vitoriario/monsterqueue"
+	"github.com/vitoriario/monsterqueue/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )

@@ -8,7 +8,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/tsuru/monsterqueue"
+	"github.com/vitoriario/monsterqueue"
 	"gopkg.in/mgo.v2/bson"
 )
 

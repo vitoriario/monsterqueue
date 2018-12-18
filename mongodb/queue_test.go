@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tsuru/monsterqueue/mongodb"
-	"github.com/tsuru/monsterqueue/monsterqueuetest"
+	"github.com/vitoriario/monsterqueue/mongodb"
+	"github.com/vitoriario/monsterqueue/monsterqueuetest"
 	"gopkg.in/check.v1"
 )
 

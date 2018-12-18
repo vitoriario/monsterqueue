@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tsuru/monsterqueue"
+	"github.com/vitoriario/monsterqueue"
 	"gopkg.in/check.v1"
 )
 
